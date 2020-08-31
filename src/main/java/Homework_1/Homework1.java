@@ -1,9 +1,7 @@
 package Homework_1;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.InputMismatchException;
-import java.util.Random;
 import java.util.Scanner;
 
 public class Homework1 {
@@ -17,7 +15,7 @@ public class Homework1 {
     private static int[][] scoreMapAttack;
     private static int[][] scoreMap;
     private static char[][] gameMap;
-    private static Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
     //public static Random random = new Random();
 
     public static void main(String[] args) {
@@ -59,10 +57,10 @@ public class Homework1 {
                 if (gameMap[i][j] == DOT_EMPTY) {
                     gameMap[i][j] = DOT_X;
                     defStrategy();
-                    gameMap[i][j] = DOT_O;
-                    attackStrategy();
+//                    gameMap[i][j] = DOT_O;
+//                    attackStrategy();
                     gameMap[i][j] = DOT_EMPTY;
-                } else scoreMap[i][j] = 0;
+                } //else scoreMap[i][j] = 0;
             }
         }
 
@@ -81,15 +79,7 @@ public class Homework1 {
                 }
             }
         }
-//        for (int[]arr:scoreMapDef) {
-//            System.out.println(Arrays.toString(arr));
-//        }
-//        for (int[]arr:scoreMapAttack) {
-//            System.out.println(Arrays.toString(arr));
-//        }
-//        for (int[]arr:scoreMap) {
-//            System.out.println(Arrays.toString(arr));
-//        }
+//        outArr(scoreMap);
         gameMap[turAiX][turnAiY] = DOT_O;
 
     }
@@ -138,19 +128,19 @@ public class Homework1 {
             }
         }
         switch (winStack) {
-            case 1 -> {
+            case 1: {
                 return defScore1;
             }
-            case 2 -> {
+            case 2 : {
                 return defScore2;
             }
-            case 3 -> {
+            case 3 : {
                 return defScore3;
             }
-            case 4 -> {
+            case 4 : {
                 return defScore4;
             }
-            default ->{
+            default :{
                 return 0;
             }
         }
@@ -187,7 +177,7 @@ public class Homework1 {
                 if (gameMap[j][i] == symb) {
                     winStrikeCol++;
                     if (winStrikeCol == winStack) {
-                        scoreMap[i][j] = elevateScore(symb, winStack);
+                        scoreMap[j][i] = elevateScore(symb, winStack);
                         return true;
                     }
                 } else {
