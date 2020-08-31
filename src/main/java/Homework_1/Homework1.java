@@ -33,19 +33,24 @@ public class Homework1 {
                 System.out.println("Ничья");
                 break;
             }
-//            aiTurn();
-//            printGameMap();
-//            if (checkWin(DOT_O)) {
-//                System.out.println("Победил Искуственный Интеллект");
-//                break;
-//            }
-//            if (isMapFull()) {
-//                System.out.println("Ничья");
-//                break;
-//            }
+            aiTurn();
+            printGameMap();
+            if (checkWin(DOT_O, SIZE_TO_WIN)) {
+                System.out.println("Победил Искуственный Интеллект");
+                break;
+            }
+            if (isMapFull()) {
+                System.out.println("Ничья");
+                break;
+            }
         }
         System.out.println("Игра закончена");
 
+    }
+    private static void outArr(int[][] myArr){
+        for (int[]arr:myArr) {
+            System.out.println(Arrays.toString(arr));
+        }
     }
 
     private static void aiTurn() {
@@ -54,22 +59,59 @@ public class Homework1 {
                 if (gameMap[i][j] == DOT_EMPTY) {
                     gameMap[i][j] = DOT_X;
                     defStrategy();
-                    //attackStrategy();
-
+                    gameMap[i][j] = DOT_O;
+                    attackStrategy();
                     gameMap[i][j] = DOT_EMPTY;
-                } else scoreMap[i][j] = 10;
+                } else scoreMap[i][j] = 0;
             }
+        }
+
+        int turAiX = 0;
+        int turnAiY = 0;
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                scoreMap[i][j] = scoreMapDef[i][j] + scoreMapAttack[i][j];
+                if (gameMap[i][j] != DOT_EMPTY)
+                    scoreMap[i][j] =  -10;
+                if (scoreMap[i][j] > max) {
+                    max = scoreMap[i][j];
+                    turAiX = i;
+                    turnAiY = j;
+                }
+            }
+        }
+//        for (int[]arr:scoreMapDef) {
+//            System.out.println(Arrays.toString(arr));
+//        }
+//        for (int[]arr:scoreMapAttack) {
+//            System.out.println(Arrays.toString(arr));
+//        }
+//        for (int[]arr:scoreMap) {
+//            System.out.println(Arrays.toString(arr));
+//        }
+        gameMap[turAiX][turnAiY] = DOT_O;
+
+    }
+
+    private static void attackStrategy() {
+        for (int i = 1; i <= SIZE_TO_WIN; i++) {
+            checkWin(DOT_O, i);
+        }
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++)
+                scoreMapAttack[i][j] = scoreMap[i][j];
         }
     }
 
     private static void defStrategy() {
         for (int i = 1; i <= SIZE_TO_WIN; i++) {
-            if (checkWin(DOT_X, i)) {
-
-
-            }
+            checkWin(DOT_X, i);
         }
-
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++)
+                scoreMapDef[i][j] = scoreMap[i][j];
+        }
     }
 
     private static int elevateScore(char symb, int winStack) {
@@ -80,8 +122,8 @@ public class Homework1 {
         switch (symb) {
             case DOT_O: {
                 defScore1 = 10;
-                defScore2 = 60;
-                defScore3 = 80;
+                defScore2 = 100;
+                defScore3 = 130;
                 defScore4 = 10000;
                 break;
             }
@@ -89,10 +131,11 @@ public class Homework1 {
                 defScore1 = 10;
                 defScore2 = 60;
                 defScore3 = 100;
-                defScore4 = 200;
+                defScore4 = 500;
                 break;
             }
-            default:{ }
+            default: {
+            }
         }
         switch (winStack) {
             case 1 -> {
@@ -106,6 +149,9 @@ public class Homework1 {
             }
             case 4 -> {
                 return defScore4;
+            }
+            default ->{
+                return 0;
             }
         }
     }
@@ -132,7 +178,7 @@ public class Homework1 {
                 if (gameMap[i][j] == symb) {
                     winStrikeStr++;
                     if (winStrikeStr == winStack) {
-
+                        scoreMap[i][j] = elevateScore(symb, winStack);
                         return true;
                     }
                 } else {
@@ -141,6 +187,7 @@ public class Homework1 {
                 if (gameMap[j][i] == symb) {
                     winStrikeCol++;
                     if (winStrikeCol == winStack) {
+                        scoreMap[i][j] = elevateScore(symb, winStack);
                         return true;
                     }
                 } else {
@@ -160,6 +207,7 @@ public class Homework1 {
                 if (gameMap[i][i + k] == symb) {
                     winStrikeExtendBackslashHi++;
                     if (winStrikeExtendBackslashHi == winStack) {
+                        scoreMap[i][i + k] = elevateScore(symb, winStack);
                         return true;
                     }
                 } else {
@@ -168,6 +216,7 @@ public class Homework1 {
                 if (gameMap[i][SIZE - (i + 1 + k)] == symb) {
                     winStrikeExtendSlashHi++;
                     if (winStrikeExtendSlashHi == winStack) {
+                        scoreMap[i][SIZE - (i + 1 + k)] = elevateScore(symb, winStack);
                         return true;
                     }
                 } else {
@@ -177,6 +226,7 @@ public class Homework1 {
                 if (gameMap[i + k][i] == symb) {
                     winStrikeExtendBackslashLow++;
                     if (winStrikeExtendBackslashLow == winStack) {
+                        scoreMap[i + k][i] = elevateScore(symb, winStack);
                         return true;
                     }
                 } else {
@@ -185,6 +235,7 @@ public class Homework1 {
                 if (gameMap[i + k][SIZE - (i + 1)] == symb) {
                     winStrikeExtendSlashLow++;
                     if (winStrikeExtendSlashLow == winStack) {
+                        scoreMap[i + k][SIZE - (i + 1)] = elevateScore(symb, winStack);
                         return true;
                     }
                 } else {
@@ -215,8 +266,7 @@ public class Homework1 {
 
     public static boolean isCellValid(int x, int y) {
         if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) return false;
-        if (gameMap[y][x] == DOT_EMPTY) return true;
-        return false;
+        return gameMap[y][x] == DOT_EMPTY;
     }
 
     private static void printGameMap() {
@@ -237,7 +287,9 @@ public class Homework1 {
 
     private static void initGameMap() {
         gameMap = new char[SIZE][SIZE];
-        scoreMap = new double[SIZE][SIZE];
+        scoreMap = new int[SIZE][SIZE];
+        scoreMapAttack = new int[SIZE][SIZE];
+        scoreMapDef = new int[SIZE][SIZE];
         for (char[] chars : gameMap) {
             Arrays.fill(chars, DOT_EMPTY);
         }
